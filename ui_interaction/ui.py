@@ -1,5 +1,10 @@
 from estructure.model_data import Product
-from crud.service import add_product_list, find_product, get_inventory, update_product
+from crud.service import (
+    add_product_list,
+    find_product,
+    get_inventory,
+    update_product_inventory,
+)
 
 
 def show_menu():
@@ -26,7 +31,7 @@ def request_options() -> int | None:
         return None
 
 
-def update_product(product_wait: Product):
+def update_product(product_wait: Product) -> Product:
     iterator = 0
     while iterator != 1:
         print("")
@@ -106,6 +111,6 @@ def logic_find_product(text: str):
 
         if text == "actualizar":
             product_up = update_product(i_name)
-            update_product(product_up)
+            update_product_inventory(product_up)
 
         # elif(name == "eliminar")
