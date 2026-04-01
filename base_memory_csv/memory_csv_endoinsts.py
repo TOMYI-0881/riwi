@@ -1,3 +1,7 @@
+"""
+Módulo para manejar la persistencia de datos en CSV.
+"""
+
 from estructure.model_data import *
 import csv
 import os
@@ -10,8 +14,12 @@ FILE_PATH = os.path.join(FOLDER, "inventory.csv")
 
 
 def read_products_csv() -> List[dict]:
-    """Lee los productos del CSV y los retorna como lista de diccionarios"""
+    """
+    Lee los productos del CSV y los retorna como lista de diccionarios.
 
+    Returns:
+        List[dict]: Lista de productos.
+    """
     if not os.path.isfile(FILE_PATH):
         print("El archivo no existe.")
         return []
@@ -35,11 +43,10 @@ def read_products_csv() -> List[dict]:
 
 def add_product_csv(products: List[dict]):
     """
-    Guarda productos en CSV.
+    Guarda productos en CSV, con opción de sobrescribir o fusionar.
 
-    Pregunta al usuario si desea sobrescribir o fusionar:
-    - yes: sobrescribe completamente
-    - No: fusiona por nombre
+    Args:
+        products (List[dict]): Lista de productos a guardar.
     """
 
     fieldnames = ["name", "price", "stock"]
