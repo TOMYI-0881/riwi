@@ -1,120 +1,120 @@
-# Sistema de Inventario de Productos
+# Product Inventory System
 
-## Descripción
+## Description
 
-Este proyecto es un sistema de gestión de inventario de productos desarrollado en Python. Permite agregar, mostrar, buscar, actualizar y eliminar productos, además de calcular estadísticas y guardar/cargar datos en archivos CSV. La interfaz es completamente en consola, lo que lo hace simple y eficiente para uso básico.
+This project is a **product inventory management system** developed in Python. It allows you to add, display, search, update, and delete products, as well as calculate statistics and save/load data in CSV files. The interface is entirely console-based, making it simple and efficient for basic use.
 
-El sistema está modularizado para facilitar el mantenimiento y la expansión, con separación clara entre lógica de negocio, interfaz de usuario y persistencia de datos.
+The system is **modularized** to facilitate maintenance and expansion, with clear separation between business logic, user interface, and data persistence.
 
-## Características
+## Features
 
-- **Gestión completa de productos**: Agregar, listar, buscar, actualizar y eliminar productos.
-- **Validación de datos**: Entradas validadas para precios y stock no negativos.
-- **Estadísticas del inventario**: Cálculo de unidades totales, valor total, producto más caro y producto con mayor stock.
-- **Persistencia en CSV**: Guardar y cargar inventario desde archivos CSV, con opciones de sobrescribir o fusionar.
-- **Interfaz en consola**: Menú interactivo fácil de usar.
-- **Modularidad**: Código organizado en módulos independientes (estructura, CRUD, UI, persistencia).
+- **Complete Product Management**: Add, list, search, update, and delete products.
+- **Data Validation**: Inputs validated for non-negative prices and stock.
+- **Inventory Statistics**: Calculation of total units, total value, most expensive product, and highest stock product.
+- **CSV Persistence**: Save and load inventory from CSV files, with overwrite or merge options.
+- **Console Interface**: Easy-to-use interactive menu.
+- **Modularity**: Code organized in independent modules (structure, CRUD, UI, persistence).
 
-## Requisitos
+## Requirements
 
-- Python 3.8 o superior.
-- No se requieren bibliotecas externas adicionales (usa solo módulos estándar como `csv`, `os`, `typing`).
+- Python 3.8 or higher.
+- No additional external libraries required (uses only standard modules like `csv`, `os`, `typing`).
 
-## Instalación
+## Installation
 
-1. Clona o descarga el repositorio en tu máquina local.
-2. Asegúrate de tener Python instalado.
-3. Ejecuta el archivo principal `app.py` desde la raíz del proyecto:
+1. Clone or download the repository to your local machine.
+2. Ensure Python is installed.
+3. Run the main file `app.py` from the project root:
 
    ```bash
    python app.py
    ```
 
-No es necesario instalar dependencias adicionales, ya que el proyecto usa solo bibliotecas estándar de Python.
+No additional dependencies need to be installed, as the project uses only Python's standard libraries.
 
-## Uso
+## Usage
 
-Al ejecutar `app.py`, verás un menú con las siguientes opciones:
+When running `app.py`, you'll see a menu with the following options:
 
-1. **Agregar producto**: Ingresa nombre, precio y stock. Si el producto ya existe, se actualiza el stock.
-2. **Mostrar productos**: Lista todos los productos en una tabla formateada.
-3. **Buscar producto**: Encuentra un producto por nombre y muestra sus detalles.
-4. **Actualizar producto**: Modifica precio o stock de un producto existente.
-5. **Eliminar producto**: Remueve un producto del inventario.
-6. **Estadísticas**: Muestra métricas generales del inventario.
-7. **Guardar CSV**: Exporta el inventario actual a un archivo CSV (elige sobrescribir o fusionar).
-8. **Cargar CSV**: Importa productos desde un archivo CSV al inventario.
-9. **Salir**: Cierra la aplicación.
+1. **Add Product**: Enter name, price, and stock. If the product already exists, stock is updated.
+2. **Show Products**: List all products in a formatted table.
+3. **Search Product**: Find a product by name and display its details.
+4. **Update Product**: Modify price or stock of an existing product.
+5. **Delete Product**: Remove a product from inventory.
+6. **Statistics**: Display general inventory metrics.
+7. **Save CSV**: Export current inventory to a CSV file (choose overwrite or merge).
+8. **Load CSV**: Import products from a CSV file into inventory.
+9. **Exit**: Close the application.
 
-### Ejemplo de uso
+### Usage Example
 
-- Agregar un producto: Selecciona opción 1, ingresa "manzana", precio 2.50, stock 10.
-- Mostrar productos: Selecciona opción 2 para ver la tabla.
-- Buscar: Selecciona opción 3, ingresa "manzana" para ver detalles.
-- Estadísticas: Selecciona opción 6 para ver totales y productos destacados.
+- Add a product: Select option 1, enter "apple", price 2.50, stock 10.
+- Show products: Select option 2 to view the table.
+- Search: Select option 3, enter "apple" to view details.
+- Statistics: Select option 6 to view totals and highlighted products.
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 riwi2/
-├── app.py                          # Archivo principal que ejecuta el menú
+├── app.py                          # Main file that runs the menu
 ├── estructure/
-│   └── model_data.py               # Definición de tipos (Product, Statistics)
+│   └── model_data.py               # Type definitions (Product, Statistics)
 ├── crud/
-│   └── service.py                  # Lógica de operaciones CRUD y estadísticas
+│   └── service.py                  # CRUD operations and statistics logic
 ├── ui_interaction/
-│   └── ui.py                       # Interfaz de usuario en consola
+│   └── ui.py                       # Console user interface
 ├── base_memory_csv/
-│   ├── memory_csv_endoinsts.py     # Funciones para guardar/cargar CSV
+│   ├── memory_csv_endoinsts.py     # Functions to save/load CSV
 │   └── data_base/
-│       └── inventory.csv           # Archivo CSV para persistencia (creado automáticamente)
-└── README.md                       # Este archivo
+│       └── inventory.csv           # CSV file for persistence (auto-created)
+└── README.md                       # This file
 ```
 
-### Descripción de Módulos
+### Module Descriptions
 
-- **app.py**: Punto de entrada. Maneja el bucle del menú y llama a funciones de otros módulos.
-- **estructure/model_data.py**: Define las clases TypedDict para Product y Statistics, asegurando tipado fuerte.
-- **crud/service.py**: Contiene funciones para agregar, buscar, actualizar, eliminar productos y calcular estadísticas. Gestiona la lista global de inventario.
-- **ui_interaction/ui.py**: Maneja la interacción con el usuario: muestra menús, solicita inputs y valida datos.
-- **base_memory_csv/memory_csv_endoinsts.py**: Encargado de la persistencia. Lee y escribe archivos CSV, con lógica para fusionar o sobrescribir datos.
+- **app.py**: Entry point. Handles the menu loop and calls functions from other modules.
+- **estructure/model_data.py**: Defines TypedDict classes for Product and Statistics, ensuring strong typing.
+- **crud/service.py**: Contains functions to add, search, update, delete products, and calculate statistics. Manages the global inventory list.
+- **ui_interaction/ui.py**: Handles user interaction: displays menus, requests inputs, and validates data.
+- **base_memory_csv/memory_csv_endoinsts.py**: Responsible for persistence. Reads and writes CSV files, with logic to merge or overwrite data.
 
-## Funcionalidades Detalladas
+## Detailed Features
 
-### Gestión de Productos
+### Product Management
 
-- Los productos se almacenan en una lista global en memoria.
-- Cada producto tiene nombre (string), precio (float) y stock (int).
-- Operaciones CRUD completas con validaciones.
+- Products are stored in a global in-memory list.
+- Each product has name (string), price (float), and stock (int).
+- Full CRUD operations with validations.
 
-### Estadísticas
+### Statistics
 
-- Calcula unidades totales, valor total (precio \* stock acumulado).
-- Identifica el producto más caro y el de mayor stock.
+- Calculates total units, total value (accumulated price \* stock).
+- Identifies the most expensive product and the one with highest stock.
 
-### Persistencia
+### Persistence
 
-- Los datos se guardan en `base_memory_csv/data_base/inventory.csv`.
-- Al guardar, elige entre sobrescribir todo o fusionar por nombre (suma stock si existe).
-- Al cargar, reemplaza el inventario actual.
+- Data is saved to `base_memory_csv/data_base/inventory.csv`.
+- When saving, choose to overwrite everything or merge by name (adds stock if exists).
+- When loading, replaces the current inventory.
 
-## Contribución
+## Contributing
 
-Si deseas contribuir:
+If you want to contribute:
 
-1. Haz un fork del proyecto.
-2. Crea una rama para tu feature (ej. `git checkout -b nueva-funcionalidad`).
-3. Realiza cambios y prueba.
-4. Envía un pull request con descripción clara.
+1. Fork the project.
+2. Create a branch for your feature (e.g., `git checkout -b new-feature`).
+3. Make changes and test.
+4. Send a pull request with a clear description.
 
-Asegúrate de seguir buenas prácticas: docstrings en español, tipado fuerte y pruebas manuales.
+Make sure to follow best practices: English docstrings, strong typing, and manual testing.
 
-## Licencia
+## License
 
-Este proyecto es de código abierto. Úsalo libremente para aprendizaje o proyectos personales. No incluye garantía de ningún tipo.
+This project is open-source. Use it freely for learning or personal projects. It comes with no warranty of any kind.
 
-## Notas Finales
+## Final Notes
 
-Este sistema es ideal para pequeños negocios o como base para aplicaciones más complejas. Si encuentras bugs o tienes ideas para mejoras (como interfaz gráfica o base de datos), ¡házmelo saber!
+This system is ideal for small businesses or as a base for more complex applications. If you find bugs or have ideas for improvements (like a graphical interface or database), let me know!
 
-Desarrollado con Python puro para simplicidad y portabilidad.
+Developed with pure Python for simplicity and portability.
