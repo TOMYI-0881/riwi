@@ -129,7 +129,7 @@ def calculate_statistic() -> Optional[Statistics]:
     Returns:
         Optional[Statistics]: Estadísticas o None si inventario vacío.
     """
-    if inventory is None:
+    if not inventory:
         return None
 
     total_units: int = 0
