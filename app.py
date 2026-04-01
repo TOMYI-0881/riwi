@@ -81,7 +81,16 @@ def menu_base():
                 print("Error: El inventario está vacío.")
 
         elif option == 8:
-            read_product_memory_csv()
+            try:
+                read_product_memory_csv()
+            except FileNotFoundError:
+                print("No se encontró el archivo CSV de inventario pendiente.")
+            except UnicodeDecodeError:
+                print("No se pudo decodificar el archivo CSV al cargar inventario.")
+            except ValueError as e:
+                print(f"Error de formato al cargar inventario CSV: {e}")
+            except Exception as e:
+                print(f"Error inesperado al cargar inventario CSV: {e}")
 
         elif option == 9:
             print("Saliendo...")

@@ -106,9 +106,6 @@ def update_product(product_wait: Product) -> Optional[dict]:
 
                 except ValueError:
                     print("Ingresa un valor válido.")
-                except ValueError:
-                    print()
-                    print("--Ingresa un valor valido--")
 
 
 def logic_find_product(text: str):

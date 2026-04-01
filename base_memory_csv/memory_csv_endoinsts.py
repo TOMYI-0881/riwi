@@ -22,17 +22,32 @@ def read_products_csv() -> List[dict]:
 
     products: List[dict] = []
 
-    with open(FILE_PATH, mode="r", encoding="utf-8") as file:
-        reader = csv.DictReader(file)
+    try:
+        with open(FILE_PATH, mode="r", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
 
-        for fila in reader:
-            products.append(
-                {
-                    "name": fila["name"],
-                    "price": float(fila["price"]),
-                    "stock": int(fila["stock"]),
-                }
-            )
+            for fila in reader:
+                try:
+                    products.append(
+                        {
+                            "name": fila["name"],
+                            "price": float(fila["price"]),
+                            "stock": int(fila["stock"]),
+                        }
+                    )
+                except (ValueError, TypeError) as e:
+                    print(f"Error de formato en fila CSV: {fila} -> {e}")
+                    continue
+
+    except FileNotFoundError:
+        print(f"Archivo no encontrado: {FILE_PATH}")
+        return []
+    except UnicodeDecodeError as e:
+        print(f"Error de decodificación al leer CSV: {e}")
+        return []
+    except Exception as e:
+        print(f"Error desconocido al leer CSV: {e}")
+        return []
 
     return products
 
@@ -68,53 +83,63 @@ def add_product_csv(products: List[dict]):
         .lower()
     )
 
-    # CASO 1: SOBRESCRIBIR
-    if opcion == "yes":
-        with open(FILE_PATH, mode="w", newline="", encoding="utf-8") as file:
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writeheader()
+    try:
+        # CASO 1: SOBRESCRIBIR
+        if opcion == "yes":
+            with open(FILE_PATH, mode="w", newline="", encoding="utf-8") as file:
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
+
+                for product in products:
+                    writer.writerow(
+                        {
+                            "name": product["name"],
+                            "price": product["price"],
+                            "stock": product["stock"],
+                        }
+                    )
+
+            print("Inventario sobrescrito correctamente.")
+            return
+
+        # CASO 2: FUSIONAR
+        elif opcion == "no":
+            merged = existing_dict.copy()
 
             for product in products:
-                writer.writerow(
-                    {
-                        "name": product["name"],
-                        "price": product["price"],
-                        "stock": product["stock"],
-                    }
-                )
+                name = product["name"]
 
-        print("Inventario sobrescrito correctamente.")
-        return
+                if name in merged:
+                    merged[name]["stock"] += product["stock"]
+                    merged[name]["price"] = product["price"]
+                else:
+                    merged[name] = product
 
-    # CASO 2: FUSIONAR
-    elif opcion == "no":
-        merged = existing_dict.copy()
+            # Guardar resultado fusionado
+            with open(FILE_PATH, mode="w", newline="", encoding="utf-8") as file:
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
 
-        for product in products:
-            name = product["name"]
+                for product in merged.values():
+                    writer.writerow(
+                        {
+                            "name": product["name"],
+                            "price": product["price"],
+                            "stock": product["stock"],
+                        }
+                    )
 
-            if name in merged:
-                merged[name]["stock"] += product["stock"]
-                merged[name]["price"] = product["price"]
-            else:
-                merged[name] = product
+            print("Inventario fusionado correctamente.")
+            return
 
-        # Guardar resultado fusionado
-        with open(FILE_PATH, mode="w", newline="", encoding="utf-8") as file:
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writeheader()
+        else:
+            print("Opción no válida.")
 
-            for product in merged.values():
-                writer.writerow(
-                    {
-                        "name": product["name"],
-                        "price": product["price"],
-                        "stock": product["stock"],
-                    }
-                )
-
-        print("Inventario fusionado correctamente.")
-        return
-
-    else:
-        print("Opción no válida.")
+    except FileNotFoundError as e:
+        print(f"Error: Archivo no encontrado al guardar CSV: {e}")
+    except UnicodeDecodeError as e:
+        print(f"Error de decodificación al guardar CSV: {e}")
+    except ValueError as e:
+        print(f"Error de conversión de datos al guardar CSV: {e}")
+    except Exception as e:
+        print(f"Error desconocido al guardar CSV: {e}")
