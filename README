@@ -1,0 +1,120 @@
+# Product Inventory System
+
+## Description
+
+This project is a product inventory management system developed in Python. It allows you to add, display, search, update, and delete products, as well as calculate statistics and save/load data from CSV files. The interface is entirely console-based, making it simple and efficient for basic use.
+
+The system is modularized to facilitate maintenance and expansion, with a clear separation between business logic, user interface, and data persistence.
+
+## Features
+
+- **Full product management**: Add, list, search, update, and delete products.
+- **Data validation**: Inputs validated for non-negative prices and stock values.
+- **Inventory statistics**: Calculation of total units, total value, most expensive product, and product with the highest stock.
+- **CSV persistence**: Save and load inventory from CSV files, with options to overwrite or merge.
+- **Console interface**: Easy-to-use interactive menu.
+- **Modularity**: Code organized into independent modules (structure, CRUD, UI, persistence).
+
+## Requirements
+
+- Python 3.8 or higher.
+- No additional external libraries required (uses only standard modules such as `csv`, `os`, `typing`).
+
+## Installation
+
+1. Clone or download the repository to your local machine.
+2. Make sure Python is installed.
+3. Run the main file `app.py` from the project root:
+
+   ```bash
+   python app.py
+   ```
+
+No additional dependencies need to be installed, as the project uses only Python's standard library.
+
+## Usage
+
+When running `app.py`, you will see a menu with the following options:
+
+1. **Add product**: Enter name, price, and stock. If the product already exists, the stock is updated.
+2. **Show products**: Lists all products in a formatted table.
+3. **Search product**: Finds a product by name and displays its details.
+4. **Update product**: Modifies the price or stock of an existing product.
+5. **Delete product**: Removes a product from the inventory.
+6. **Statistics**: Displays general inventory metrics.
+7. **Save CSV**: Exports the current inventory to a CSV file (choose to overwrite or merge).
+8. **Load CSV**: Imports products from a CSV file into the inventory.
+9. **Exit**: Closes the application.
+
+### Usage Example
+
+- Add a product: Select option 1, enter "apple", price 2.50, stock 10.
+- Show products: Select option 2 to view the table.
+- Search: Select option 3, enter "apple" to view details.
+- Statistics: Select option 6 to view totals and featured products.
+
+## Project Structure
+
+```
+riwi2/
+├── app.py                          # Main file that runs the menu
+├── estructure/
+│   └── model_data.py               # Type definitions (Product, Statistics)
+├── crud/
+│   └── service.py                  # CRUD operations and statistics logic
+├── ui_interaction/
+│   └── ui.py                       # Console user interface
+├── base_memory_csv/
+│   ├── memory_csv_endoinsts.py     # Functions for saving/loading CSV
+│   └── data_base/
+│       └── inventory.csv           # CSV file for persistence (auto-created)
+└── README.md                       # This file
+```
+
+### Module Descriptions
+
+- **app.py**: Entry point. Handles the menu loop and calls functions from other modules.
+- **estructure/model_data.py**: Defines TypedDict classes for Product and Statistics, ensuring strong typing.
+- **crud/service.py**: Contains functions to add, search, update, delete products, and calculate statistics. Manages the global inventory list.
+- **ui_interaction/ui.py**: Handles user interaction: displays menus, requests inputs, and validates data.
+- **base_memory_csv/memory_csv_endoinsts.py**: Handles persistence. Reads and writes CSV files, with logic to merge or overwrite data.
+
+## Detailed Features
+
+### Product Management
+
+- Products are stored in a global in-memory list.
+- Each product has a name (string), price (float), and stock (int).
+- Full CRUD operations with validations.
+
+### Statistics
+
+- Calculates total units and total value (price × accumulated stock).
+- Identifies the most expensive product and the one with the highest stock.
+
+### Persistence
+
+- Data is saved to `base_memory_csv/data_base/inventory.csv`.
+- When saving, choose between overwriting everything or merging by name (adds stock if the product already exists).
+- When loading, replaces the current inventory.
+
+## Contributing
+
+If you'd like to contribute:
+
+1. Fork the project.
+2. Create a branch for your feature (e.g., `git checkout -b new-feature`).
+3. Make changes and test them.
+4. Submit a pull request with a clear description.
+
+Please follow good practices: docstrings in English, strong typing, and manual testing.
+
+## License
+
+This project is open source. Use it freely for learning or personal projects. No warranty of any kind is included.
+
+## Final Notes
+
+This system is ideal for small businesses or as a foundation for more complex applications. If you find bugs or have ideas for improvements (such as a graphical interface or database), feel free to let me know!
+
+Developed with pure Python for simplicity and portability.
