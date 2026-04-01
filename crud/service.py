@@ -173,5 +173,5 @@ def read_product_memory_csv():
     """
     Carga productos desde CSV al inventario.
     """
-    clear_inventory
+    clear_inventory()
     inventory.extend(read_products_csv())
