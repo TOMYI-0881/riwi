@@ -1,3 +1,5 @@
+"""Console UI helpers: menu display, user input, product find/update/statistics."""
+
 from estructure.model_data import *
 from crud.service import (
     add_product_list,
@@ -10,6 +12,7 @@ from crud.service import (
 
 
 def show_menu():
+    """Display static application menu options."""
     print(
         "-----------MENU----------- \n"
         "1) Agregar producto \n"
@@ -26,6 +29,7 @@ def show_menu():
 
 
 def request_options() -> int | None:
+    """Read integer option from user input; return None on invalid input."""
     try:
         option = int(input())
         return option
@@ -34,6 +38,12 @@ def request_options() -> int | None:
 
 
 def update_product(product_wait: Product) -> Optional[dict]:
+    """Interactively update a product price and/or stock.
+
+    Returns a partial product dict with updated values. If no field is changed,
+    values remain None and the caller can skip the update.
+    """
+
     product_local: Product = {
         "name": product_wait["name"],
         "price": None,
@@ -42,19 +52,14 @@ def update_product(product_wait: Product) -> Optional[dict]:
     iterator = 0
     while iterator != 1:
         print("")
+        print("Producto seleccionado para actualizar:")
+        print("-" * 40)
+        print(f"Nombre: {product_wait['name']}")
+        print(f"Precio: ${product_wait['price']:.2f}")
+        print(f"Stock: {product_wait['stock']}")
+        print("-" * 40)
         process = (
-            str(
-                input(
-                    f"este es tu producto elegido para actualizar: \n"
-                    f"---------------PRODUCT------------ \n"
-                    f"{product_wait} \n"
-                    f"------------------------------------ \n\n"
-                    f"-si deseas editarlo digita la plabra EDIT \n"
-                    f"-si deseas guardarlo digita la plabra SAVE \n\n"
-                )
-            )
-            .strip()
-            .upper()
+            input("Ingresa 'EDIT' para editar o 'SAVE' para guardar: ").strip().upper()
         )
 
         if process == "SAVE":
@@ -64,62 +69,63 @@ def update_product(product_wait: Product) -> Optional[dict]:
             edit = ""
             while True:
                 print("")
-                edit = (
-                    str(
-                        input(
-                            f"este es tu inventario actual: \n"
-                            f"---------------INVENTARIO------------ \n"
-                            f"{product_wait} \n"
-                            f"------------------------------------ \n\n"
-                            f"si quieres editar el precio, ingresa PRECIO \n"
-                            f"si quieres editar la cantidad, CANTIDAD \n"
-                            f"si quieres salir de la seccion de editar ingresa EXIT \n\n"
-                        )
-                    )
-                    .strip()
-                    .upper()
-                )
+                print("Opciones de edición:")
+                print("1. Editar precio")
+                print("2. Editar stock")
+                print("3. Salir de edición")
+                edit = input("Selecciona una opción (1-3): ").strip()
+
                 try:
-                    if edit == "PRECIO":
-                        product_local["price"] = float(
-                            input(
-                                f"\n Nuevo valor del producto {product_wait["name"]}: "
-                            )
+                    if edit == "1":
+                        new_price = float(
+                            input(f"Nuevo precio para '{product_wait['name']}': ")
                         )
-                        product_wait["price"] = product_local["price"]
+                        if new_price >= 0:
+                            product_local["price"] = new_price
+                            product_wait["price"] = new_price
+                            print("Precio actualizado.")
+                        else:
+                            print("El precio debe ser mayor o igual a 0.")
 
-                    elif edit == "CANTIDAD":
-                        product_local["stock"] = int(
-                            input(
-                                f"\n Nueva cantidad asignable para el producto {product_wait['name']}: "
-                            )
+                    elif edit == "2":
+                        new_stock = int(
+                            input(f"Nuevo stock para '{product_wait['name']}': ")
                         )
-                        product_wait["stock"] = product_local["stock"]
+                        if new_stock >= 0:
+                            product_local["stock"] = new_stock
+                            product_wait["stock"] = new_stock
+                            print("Stock actualizado.")
+                        else:
+                            print("El stock debe ser mayor o igual a 0.")
 
-                    elif edit == "EXIT":
+                    elif edit == "3":
                         break
+
+                    else:
+                        print("Opción inválida.")
+
+                except ValueError:
+                    print("Ingresa un valor válido.")
                 except ValueError:
                     print()
                     print("--Ingresa un valor valido--")
 
 
 def logic_find_product(text: str):
+    """Handle product search, update, or delete operations based on text action."""
     name: str = (
-        input(f"Dame el nombre del producto que deseas {text.upper()}: \n")
-        .strip()
-        .lower()
+        input(f"Ingresa el nombre del producto que deseas {text}: ").strip().lower()
     )
     i_name = find_product(name)
     if not i_name:
-        print(
-            f"el producto bajo el nombre de {name.upper()} que deseas {text}, no se encuentra en el inventario"
-        )
+        print(f"El producto '{name}' no se encuentra en el inventario.")
     else:
         if text == "buscar":
-            print("------PRODUCTO ENCONTRADO------")
-            print(
-                f"Producto: {i_name['name']} | Precio: {i_name['price']:.2f} | Cantidad: {i_name['stock']}"
-            )
+            print("Producto encontrado:")
+            print("-" * 40)
+            print(f"Nombre: {i_name['name']}")
+            print(f"Precio: ${i_name['price']:.2f}")
+            print(f"Stock: {i_name['stock']}")
             print("-" * 40)
 
         if text == "actualizar":
@@ -131,18 +137,28 @@ def logic_find_product(text: str):
 
 
 def show_statistics():
+    """Display computed inventory statistics clearly.
+
+    Uses calculate_statistic() to gather values and prints totals and best values.
+    """
     statistics = calculate_statistic()
     if statistics is None:
-        print("El inventario está vacío")
+        print("El inventario está vacío.")
     else:
-        print("\n--- ESTADÍSTICAS ---")
-        print(f"{'Unidades totales:':30} {statistics['total_units']}")
-        print(f"{'Valor total:':30} ${statistics['total_value']:.2f}")
+        print("\nEstadísticas del inventario:")
+        print("-" * 40)
+        print(f"{'Unidades totales:':<25} {statistics['total_units']}")
+        print(f"{'Valor total:':<25} ${statistics['total_value']:.2f}")
+        print()
 
         most_expensive = statistics["most_expensive_product"]
-        print(f"{'Producto más caro:':30} {most_expensive.get('name', 'N/A')}")
-        print(f"{'Precio:':30} ${most_expensive.get('price', 0):.2f}")
+        print("Producto más caro:")
+        print(f"{'Nombre:':<25} {most_expensive.get('name', 'N/A')}")
+        print(f"{'Precio:':<25} ${most_expensive.get('price', 0):.2f}")
+        print()
 
         highest_stock = statistics["highest_stock_product"]
-        print(f"{'Producto mayor stock:':30} {highest_stock.get('name', 'N/A')}")
-        print(f"{'Stock:':30} {highest_stock.get('stock', 0)}")
+        print("Producto con mayor stock:")
+        print(f"{'Nombre:':<25} {highest_stock.get('name', 'N/A')}")
+        print(f"{'Stock:':<25} {highest_stock.get('stock', 0)}")
+        print("-" * 40)

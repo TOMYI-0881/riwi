@@ -1,15 +1,19 @@
+"""CSV persistence utilities for inventory data."""
+
 from estructure.model_data import *
 import csv
 import os
 from typing import List
 
-# Configuración de ruta
+# Path configuration for inventory file
 BASE_DIR = os.path.dirname(__file__)
 FOLDER = os.path.join(BASE_DIR, "data_base")
 FILE_PATH = os.path.join(FOLDER, "inventory.csv")
 
 
 def read_products_csv() -> List[dict]:
+    """Read products from CSV and return a list of product dictionaries."""
+
     """Lee los productos del CSV y los retorna como lista de diccionarios"""
 
     if not os.path.isfile(FILE_PATH):
@@ -34,12 +38,11 @@ def read_products_csv() -> List[dict]:
 
 
 def add_product_csv(products: List[dict]):
-    """
-    Guarda productos en CSV.
+    """Save product list to CSV file with optional overwrite or merge.
 
-    Pregunta al usuario si desea sobrescribir o fusionar:
-    - yes: sobrescribe completamente
-    - No: fusiona por nombre
+    User chooses:
+    - YES: overwrite inventory file
+    - NO: merge stock by product name and update price
     """
 
     fieldnames = ["name", "price", "stock"]

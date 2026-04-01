@@ -1,3 +1,5 @@
+"""Main application entry point and user menu handling."""
+
 from estructure.model_data import Product
 from crud.service import (
     show_products,
@@ -11,6 +13,11 @@ from base_memory_csv.memory_csv_endoinsts import add_product_csv, read_products_
 
 
 def menu_base():
+    """Show menu options and execute user actions.
+
+    Loops until the user selects exit. Validates user input for actions
+    and handles product add/show/search/update/delete/statistics/CSV operations.
+    """
     while True:
         print("")
         show_menu()
@@ -28,7 +35,7 @@ def menu_base():
                         name_product = input("Nombre del producto: ")
                         product_wait["name"] = name_product.strip().lower()
                     if price < 0.0:
-                        price = float(input(f"Precio del producto {name_product}: "))
+                        price = float(input(f"Precio del producto '{name_product}': "))
                         if price >= 0:
                             product_wait["price"] = price
                         else:
@@ -36,7 +43,7 @@ def menu_base():
                             continue
                     if stock < 0:
                         stock = int(
-                            input(f"cantida de {name_product} que deseas agregar: ")
+                            input(f"Cantidad de '{name_product}' que deseas agregar: ")
                         )
                         if stock >= 0:
                             product_wait["stock"] = stock
@@ -46,8 +53,7 @@ def menu_base():
 
                     break
                 except ValueError:
-                    print()
-                    print("--Ingresa un valor valido--")
+                    print("Ingresa un valor válido.")
 
             add_product_list(product_wait)
 
@@ -72,7 +78,7 @@ def menu_base():
                 clear_inventory()
 
             else:
-                print("ERROR el inventario que quieres subir esta vacio")
+                print("Error: El inventario está vacío.")
 
         elif option == 8:
             read_product_memory_csv()
@@ -81,9 +87,9 @@ def menu_base():
             print("Saliendo...")
             break
         elif not option:
-            print("ingresa un valor valido")
+            print("Ingresa un valor válido.")
         else:
-            print("ingresa un numero de 1 - 9")
+            print("Ingresa un número del 1 al 9.")
 
 
 menu_base()
