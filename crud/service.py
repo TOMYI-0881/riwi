@@ -4,7 +4,14 @@ from base_memory_csv.memory_csv_endoinsts import read_products_csv
 inventory: list[Product] = []
 
 
-def add_product_list(product: Product):
+def add_product_list(product: dict):
+
+    for i in inventory:
+        if i["name"] == product["name"]:
+            i["stock"] += product["stock"]
+            i["price"] = product["price"]
+            return
+
     inventory.append(product)
 
 
@@ -115,6 +122,10 @@ def calculate_statistic() -> Optional[Statistics]:
     }
 
 
-def read_product_memory_csv():
+def clear_inventory():
     inventory.clear()
+
+
+def read_product_memory_csv():
+    clear_inventory
     inventory.extend(read_products_csv())

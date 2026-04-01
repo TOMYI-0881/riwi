@@ -4,6 +4,7 @@ from crud.service import (
     find_product,
     read_product_memory_csv,
     get_inventory,
+    clear_inventory,
 )
 from ui_interaction.ui import *
 from base_memory_csv.memory_csv_endoinsts import add_product_csv, read_products_csv
@@ -17,8 +18,8 @@ def menu_base():
 
         if option == 1:
             name_product = ""
-            price = 0.0
-            stock = 0
+            price = -0.1
+            stock = -1
             product_wait: Product = {}
 
             while True:
@@ -26,14 +27,23 @@ def menu_base():
                     if not name_product:
                         name_product = input("Nombre del producto: ")
                         product_wait["name"] = name_product.strip().lower()
-                    if not price:
+                    if price < 0.0:
                         price = float(input(f"Precio del producto {name_product}: "))
-                        product_wait["price"] = price
-                    if not stock:
+                        if price >= 0:
+                            product_wait["price"] = price
+                        else:
+                            price = -0.1
+                            continue
+                    if stock < 0:
                         stock = int(
                             input(f"cantida de {name_product} que deseas agregar: ")
                         )
-                        product_wait["stock"] = stock
+                        if stock >= 0:
+                            product_wait["stock"] = stock
+                        else:
+                            stock = -1
+                            continue
+
                     break
                 except ValueError:
                     print()
@@ -58,26 +68,9 @@ def menu_base():
 
         elif option == 7:
             if get_inventory() != []:
-                while True:
-                    answer = (
-                        input(
-                            f"\nEstas seguro que quieres sobrescribir los datos actuales en la base de datos?\n"
-                            f"digita la palabra yes si quieres continuar \n"
-                            f"digita la palabra no si quieres cancelar \n"
-                        )
-                        .strip()
-                        .lower()
-                    )
-                    if answer == "yes":
-                        add_product_csv(get_inventory())
-                        break
-                    elif answer == "no":
-                        print("")
-                        print("se cancelo la operacion")
-                        break
-                    else:
-                        print("")
-                        print("la opcion digitada no es correcta")
+                add_product_csv(get_inventory())
+                clear_inventory()
+
             else:
                 print("ERROR el inventario que quieres subir esta vacio")
 
