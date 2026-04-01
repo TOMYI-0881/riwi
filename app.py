@@ -1,6 +1,12 @@
 from estructure.model_data import Product
-from crud.service import show_products, find_product
+from crud.service import (
+    show_products,
+    find_product,
+    read_product_memory_csv,
+    get_inventory,
+)
 from ui_interaction.ui import *
+from base_memory_csv.memory_csv_endoinsts import add_product_csv, read_products_csv
 
 
 def menu_base():
@@ -39,22 +45,44 @@ def menu_base():
             show_products()
 
         elif option == 3:
-            logic_find_product("buscar")
+            logic_find_product("buscar".lower())
 
         elif option == 4:
-            logic_find_product("actualizar")
+            logic_find_product("actualizar".lower())
 
         elif option == 5:
-            print("Eliminar Producto - Opción no implementada aún")
+            logic_find_product("eliminar".lower())
 
         elif option == 6:
-            print("Estadistica - Opción no implementada aún")
+            show_statistics()
 
         elif option == 7:
-            print("Guardar CSV - Opción no implementada aún")
+            if get_inventory() != []:
+                while True:
+                    answer = (
+                        input(
+                            f"\nEstas seguro que quieres sobrescribir los datos actuales en la base de datos?\n"
+                            f"digita la palabra yes si quieres continuar \n"
+                            f"digita la palabra no si quieres cancelar \n"
+                        )
+                        .strip()
+                        .lower()
+                    )
+                    if answer == "yes":
+                        add_product_csv(get_inventory())
+                        break
+                    elif answer == "no":
+                        print("")
+                        print("se cancelo la operacion")
+                        break
+                    else:
+                        print("")
+                        print("la opcion digitada no es correcta")
+            else:
+                print("ERROR el inventario que quieres subir esta vacio")
 
         elif option == 8:
-            print("Cargar CSV - Opción no implementada aún")
+            read_product_memory_csv()
 
         elif option == 9:
             print("Saliendo...")
