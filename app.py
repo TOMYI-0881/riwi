@@ -92,4 +92,5 @@ def menu_base():
             print("Ingresa un número del 1 al 9.")
 
 
-menu_base()
+if __name__ == "__main__":
+    menu_base()
