@@ -31,7 +31,12 @@ def request_options() -> int | None:
         return None
 
 
-def update_product(product_wait: Product) -> Product:
+def update_product(product_wait: Product) -> dict:
+    product_local: Product = {
+        "name": product_wait["name"],
+        "price": None,
+        "stock": None,
+    }
     iterator = 0
     while iterator != 1:
         print("")
@@ -51,7 +56,7 @@ def update_product(product_wait: Product) -> Product:
         )
 
         if process == "SAVE":
-            return product_wait
+            return product_local
 
         elif process == "EDIT":
             edit = ""
@@ -64,7 +69,6 @@ def update_product(product_wait: Product) -> Product:
                             f"---------------INVENTARIO------------ \n"
                             f"{product_wait} \n"
                             f"------------------------------------ \n\n"
-                            f"si quieres editar el producto, ingresa PRODUCTO \n"
                             f"si quieres editar el precio, ingresa PRECIO \n"
                             f"si quieres editar la cantidad, CANTIDAD \n"
                             f"si quieres salir de la seccion de editar ingresa EXIT \n\n"
@@ -74,20 +78,19 @@ def update_product(product_wait: Product) -> Product:
                     .upper()
                 )
 
-                if edit == "PRODUCTO":
-                    product_wait["name"] = str(input(f"\n Nuevo nombre de producto: "))
-
-                elif edit == "PRECIO":
-                    product_wait["price"] = float(
+                if edit == "PRECIO":
+                    product_local["price"] = float(
                         input(f"\n Nuevo valor del producto {product_wait["name"]}: ")
                     )
+                    product_wait["price"] = product_local["price"]
 
                 elif edit == "CANTIDAD":
-                    product_wait["stock"] = int(
+                    product_local["stock"] = int(
                         input(
                             f"\n Nueva cantidad asignable para el producto {product_wait['name']}: "
                         )
                     )
+                    product_wait["stock"] = product_local["stock"]
 
                 elif edit == "EXIT":
                     break

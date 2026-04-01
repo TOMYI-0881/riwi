@@ -17,9 +17,7 @@ def show_products():
     else:
         print("Productos en el inventario:")
         print(
-            "\n{:<3} |{:<15} | {:<10.2f} | {:<8}".format(
-                "No", "NOMBRE", "PRECIO", "STOCK"
-            )
+            "\n{:<3} |{:<15} | {:<10} | {:<8}".format("No", "NOMBRE", "PRECIO", "STOCK")
         )
         for i, product in enumerate(inventory, start=1):
             print("-" * 50)
@@ -33,15 +31,20 @@ def show_products():
 def find_product(name: str) -> Product | None:
     if not inventory:
         print("no hay productos en el inventario")
+        return None
 
     else:
         for i in inventory:
             if i["name"] == name:
                 return i
-        return None
 
 
 def update_product_inventory(up_product: Product):
     for i, v in enumerate(inventory):
+        print("entro a la funcion update_product_inventory")
+        print(up_product)
         if v["name"] == up_product["name"]:
-            inventory[i] = up_product
+            if up_product["price"] is not None:
+                inventory[i]["price"] = up_product["price"]
+            if up_product["stock"] is not None:
+                inventory[i]["stock"] = up_product["stock"]

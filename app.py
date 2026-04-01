@@ -19,7 +19,7 @@ def menu_base():
                 try:
                     if not name_product:
                         name_product = input("Nombre del producto: ")
-                        product_wait["name"] = name_product
+                        product_wait["name"] = name_product.strip().lower()
                     if not price:
                         price = float(input(f"Precio del producto {name_product}: "))
                         product_wait["price"] = price
