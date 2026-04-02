@@ -42,8 +42,8 @@ def update_product(product_wait: Product) -> Optional[dict]:
         "price": None,
         "stock": None,
     }
-    iterator = 0
-    while iterator != 1:
+
+    while True:
         print("")
         print("Producto seleccionado para actualizar:")
         print("-" * 40)

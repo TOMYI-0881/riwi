@@ -14,8 +14,6 @@ FILE_PATH = os.path.join(FOLDER, "inventory.csv")
 def read_products_csv() -> List[dict]:
     """Read products from CSV and return a list of product dictionaries."""
 
-    """Lee los productos del CSV y los retorna como lista de diccionarios"""
-
     if not os.path.isfile(FILE_PATH):
         print("El archivo no existe.")
         return []
@@ -64,15 +62,16 @@ def add_product_csv(products: List[dict]):
 
     os.makedirs(FOLDER, exist_ok=True)
 
-    file_exists = os.path.isfile(FILE_PATH)
+    # Check that the file exists; if it does not, create it using the current products
+    # file_exists = os.path.isfile(FILE_PATH)
 
-    # Leer datos actuales
+    # Read current data
     existing_products = read_products_csv()
 
-    # Convertir a diccionario por nombre para fácil acceso
+    # Convert to a dictionary by name for easy access
     existing_dict = {p["name"]: p for p in existing_products}
 
-    # Preguntar al usuario
+    # Ask the user
     opcion = (
         input(
             f"¿Sobrescribir inventario actual? ( YES / NO): \n"
@@ -84,7 +83,7 @@ def add_product_csv(products: List[dict]):
     )
 
     try:
-        # CASO 1: SOBRESCRIBIR
+        # CASE 1: OVERWRITE
         if opcion == "yes":
             with open(FILE_PATH, mode="w", newline="", encoding="utf-8") as file:
                 writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -102,7 +101,7 @@ def add_product_csv(products: List[dict]):
             print("Inventario sobrescrito correctamente.")
             return
 
-        # CASO 2: FUSIONAR
+        # CASE 2: MERGE
         elif opcion == "no":
             merged = existing_dict.copy()
 
@@ -115,7 +114,7 @@ def add_product_csv(products: List[dict]):
                 else:
                     merged[name] = product
 
-            # Guardar resultado fusionado
+            # Save merged result
             with open(FILE_PATH, mode="w", newline="", encoding="utf-8") as file:
                 writer = csv.DictWriter(file, fieldnames=fieldnames)
                 writer.writeheader()

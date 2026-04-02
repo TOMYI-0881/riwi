@@ -8,25 +8,25 @@ class InventoryService:
     """Stateful inventory service with in-memory list and CSV operations."""
 
     def __init__(self):
-        self.inventory: list[Product] = []
+        self._inventory: list[Product] = []
 
     def add_product_list(self, product: dict):
         """Add product to inventory or update existing product stock and price."""
-        for i in self.inventory:
+        for i in self._inventory:
             if i["name"] == product["name"]:
                 i["stock"] += product["stock"]
                 i["price"] = product["price"]
                 return
 
-        self.inventory.append(product)
+        self._inventory.append(product)
 
     def get_inventory(self):
         """Return live inventory list reference."""
-        return self.inventory
+        return self._inventory
 
     def show_products(self):
         """Print inventory products in a formatted table."""
-        if not self.inventory:
+        if not self._inventory:
             print("No hay productos en el inventario.")
             return
 
@@ -37,7 +37,7 @@ class InventoryService:
         )
         print("-" * 50)
 
-        for idx, product in enumerate(self.inventory, start=1):
+        for idx, product in enumerate(self._inventory, start=1):
             price = float(product["price"]) if product["price"] is not None else 0.0
             stock = int(product["stock"]) if product["stock"] is not None else 0
             print(
@@ -50,11 +50,11 @@ class InventoryService:
 
     def find_product(self, name: str) -> Optional[Product]:
         """Find a product by name in inventory; returns product dict or None."""
-        if not self.inventory:
+        if not self._inventory:
             print("No hay productos en el inventario.")
             return None
 
-        for i in self.inventory:
+        for i in self._inventory:
             if i["name"] == name:
                 return i
 
@@ -63,13 +63,13 @@ class InventoryService:
     def update_product_inventory(self, up_product: Product):
         """Update inventory product fields by name with non-None values."""
         change = 0
-        for i, v in enumerate(self.inventory):
+        for i, v in enumerate(self._inventory):
             if v["name"] == up_product["name"]:
                 if up_product.get("price") is not None:
-                    self.inventory[i]["price"] = up_product["price"]
+                    self._inventory[i]["price"] = up_product["price"]
                     change += 1
                 if up_product.get("stock") is not None:
-                    self.inventory[i]["stock"] = up_product["stock"]
+                    self._inventory[i]["stock"] = up_product["stock"]
                     change += 1
 
                 if change == 0:
@@ -84,13 +84,13 @@ class InventoryService:
 
     def delete_product_inventory(self, name: str):
         """Delete a product by name from inventory."""
-        if not self.inventory:
+        if not self._inventory:
             print("No hay productos en el inventario.")
             return
 
-        for item in self.inventory:
+        for item in self._inventory:
             if item["name"] == name:
-                self.inventory.remove(item)
+                self._inventory.remove(item)
                 print(f"Producto '{name}' eliminado exitosamente.")
                 return
 
@@ -98,15 +98,15 @@ class InventoryService:
 
     def calculate_statistic(self) -> Optional[Statistics]:
         """Compute summary metrics from inventory products."""
-        if not self.inventory:
+        if not self._inventory:
             return None
 
         total_units = 0
         total_value = 0.0
-        most_expensive_product = self.inventory[0]
-        highest_stock_product = self.inventory[0]
+        most_expensive_product = self._inventory[0]
+        highest_stock_product = self._inventory[0]
 
-        for i in self.inventory:
+        for i in self._inventory:
             total_units += i["stock"]
             total_value += i["price"] * i["stock"]
 
@@ -130,12 +130,13 @@ class InventoryService:
 
     def clear_inventory(self):
         """Clear in-memory inventory list."""
-        self.inventory.clear()
+        self._inventory.clear()
 
     def read_product_memory_csv(self):
         """Load products from CSV file into inventory (clears existing data first)."""
         self.clear_inventory()
-        self.inventory.extend(read_products_csv())
+        self._inventory.extend(read_products_csv())
+        print("Inventario cargado desde CSV correctamente.")
 
 
 # Shared singleton instance for app/ui usage
