@@ -1,13 +1,7 @@
 """Main application entry point and user menu handling."""
 
 from estructure.model_data import Product
-from crud.service import (
-    show_products,
-    find_product,
-    read_product_memory_csv,
-    get_inventory,
-    clear_inventory,
-)
+from crud.service import service as inventory_service
 from ui_interaction.ui import *
 from base_memory_csv.memory_csv_endoinsts import add_product_csv, read_products_csv
 
@@ -55,10 +49,10 @@ def menu_base():
                 except ValueError:
                     print("Ingresa un valor válido.")
 
-            add_product_list(product_wait)
+            inventory_service.add_product_list(product_wait)
 
         elif option == 2:
-            show_products()
+            inventory_service.show_products()
 
         elif option == 3:
             logic_find_product("buscar".lower())
@@ -73,16 +67,16 @@ def menu_base():
             show_statistics()
 
         elif option == 7:
-            if get_inventory() != []:
-                add_product_csv(get_inventory())
-                clear_inventory()
+            if inventory_service.get_inventory() != []:
+                add_product_csv(inventory_service.get_inventory())
+                inventory_service.clear_inventory()
 
             else:
                 print("Error: El inventario está vacío.")
 
         elif option == 8:
             try:
-                read_product_memory_csv()
+                inventory_service.read_product_memory_csv()
             except FileNotFoundError:
                 print("No se encontró el archivo CSV de inventario pendiente.")
             except UnicodeDecodeError:
@@ -99,6 +93,7 @@ def menu_base():
             print("Ingresa un valor válido.")
         else:
             print("Ingresa un número del 1 al 9.")
+
 
 if __name__ == "__main__":
     menu_base()

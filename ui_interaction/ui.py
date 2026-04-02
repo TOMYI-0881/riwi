@@ -1,14 +1,7 @@
 """Console UI helpers: menu display, user input, product find/update/statistics."""
 
 from estructure.model_data import *
-from crud.service import (
-    add_product_list,
-    find_product,
-    get_inventory,
-    update_product_inventory,
-    delete_product_inventory,
-    calculate_statistic,
-)
+from crud.service import service as inventory_service
 
 
 def show_menu():
@@ -113,7 +106,7 @@ def logic_find_product(text: str):
     name: str = (
         input(f"Ingresa el nombre del producto que deseas {text}: ").strip().lower()
     )
-    i_name = find_product(name)
+    i_name = inventory_service.find_product(name)
     if not i_name:
         print(f"El producto '{name}' no se encuentra en el inventario.")
     else:
@@ -127,10 +120,10 @@ def logic_find_product(text: str):
 
         if text == "actualizar":
             product_up = update_product(i_name)
-            update_product_inventory(product_up)
+            inventory_service.update_product_inventory(product_up)
 
         if text == "eliminar":
-            delete_product_inventory(name)
+            inventory_service.delete_product_inventory(name)
 
 
 def show_statistics():
@@ -138,7 +131,7 @@ def show_statistics():
 
     Uses calculate_statistic() to gather values and prints totals and best values.
     """
-    statistics = calculate_statistic()
+    statistics = inventory_service.calculate_statistic()
     if statistics is None:
         print("El inventario está vacío.")
     else:

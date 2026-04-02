@@ -3,139 +3,140 @@
 from estructure.model_data import *
 from base_memory_csv.memory_csv_endoinsts import read_products_csv
 
-inventory: list[Product] = []
 
+class InventoryService:
+    """Stateful inventory service with in-memory list and CSV operations."""
 
-def add_product_list(product: dict):
-    """Add product to inventory or update existing product stock and price."""
+    def __init__(self):
+        self.inventory: list[Product] = []
 
-    for i in inventory:
-        if i["name"] == product["name"]:
-            i["stock"] += product["stock"]
-            i["price"] = product["price"]
+    def add_product_list(self, product: dict):
+        """Add product to inventory or update existing product stock and price."""
+        for i in self.inventory:
+            if i["name"] == product["name"]:
+                i["stock"] += product["stock"]
+                i["price"] = product["price"]
+                return
+
+        self.inventory.append(product)
+
+    def get_inventory(self):
+        """Return live inventory list reference."""
+        return self.inventory
+
+    def show_products(self):
+        """Print inventory products in a formatted table."""
+        if not self.inventory:
+            print("No hay productos en el inventario.")
             return
 
-    inventory.append(product)
-
-
-def get_inventory():
-    """Return live inventory list reference."""
-    return inventory
-
-
-def show_products():
-    """Print inventory products in a formatted table."""
-
-    if not inventory:
-        print("No hay productos en el inventario.")
-    else:
         print("Productos en el inventario:")
         print("-" * 50)
         print(
             "{:<3} | {:<15} | {:<10} | {:<8}".format("No", "NOMBRE", "PRECIO", "STOCK")
         )
         print("-" * 50)
-        for i, product in enumerate(inventory, start=1):
+
+        for idx, product in enumerate(self.inventory, start=1):
             price = float(product["price"]) if product["price"] is not None else 0.0
             stock = int(product["stock"]) if product["stock"] is not None else 0
-
             print(
                 "{:<3} | {:<15} | ${:<9.2f} | {:<8}".format(
-                    i, product["name"], price, stock
+                    idx, product["name"], price, stock
                 )
             )
+
         print("-" * 50)
 
+    def find_product(self, name: str) -> Optional[Product]:
+        """Find a product by name in inventory; returns product dict or None."""
+        if not self.inventory:
+            print("No hay productos en el inventario.")
+            return None
 
-def find_product(name: str) -> Optional[Product]:
-    """Find a product by name in inventory.
+        for i in self.inventory:
+            if i["name"] == name:
+                return i
 
-    Returns the product dict or None if not found.
-    """
-    if not inventory:
-        print("No hay productos en el inventario.")
         return None
 
-    for i in inventory:
-        if i["name"] == name:
-            return i
+    def update_product_inventory(self, up_product: Product):
+        """Update inventory product fields by name with non-None values."""
+        change = 0
+        for i, v in enumerate(self.inventory):
+            if v["name"] == up_product["name"]:
+                if up_product.get("price") is not None:
+                    self.inventory[i]["price"] = up_product["price"]
+                    change += 1
+                if up_product.get("stock") is not None:
+                    self.inventory[i]["stock"] = up_product["stock"]
+                    change += 1
 
+                if change == 0:
+                    print("No se realizaron cambios en el producto.")
+                else:
+                    print("Producto actualizado correctamente.")
+                return
 
-def update_product_inventory(up_product: Product):
-    """Update inventory product fields by name with non-None values."""
+        print(
+            f"El producto '{up_product.get('name', '')}' no se encontró en el inventario."
+        )
 
-    change: int = 0
-    for i, v in enumerate(inventory):
-        if v["name"] == up_product["name"]:
-            if up_product["price"] is not None:
-                inventory[i]["price"] = up_product["price"]
-                change += 1
-            if up_product["stock"] is not None:
-                inventory[i]["stock"] = up_product["stock"]
-                change += 1
-            if change == 0:
-                print("No se realizaron cambios en el producto.")
-            else:
-                print("Producto actualizado correctamente.")
+    def delete_product_inventory(self, name: str):
+        """Delete a product by name from inventory."""
+        if not self.inventory:
+            print("No hay productos en el inventario.")
             return
 
+        for item in self.inventory:
+            if item["name"] == name:
+                self.inventory.remove(item)
+                print(f"Producto '{name}' eliminado exitosamente.")
+                return
 
-def delete_product_inventory(name: str):
-    """Delete a product by name from inventory."""
-    if not inventory:
-        print("No hay productos en el inventario.")
-        return None
+        print(f"El producto '{name}' no se encontró en el inventario.")
 
-    for i in inventory:
-        if i["name"] == name:
-            inventory.remove(i)
-            print(f"Producto '{name}' eliminado exitosamente.")
-            return
+    def calculate_statistic(self) -> Optional[Statistics]:
+        """Compute summary metrics from inventory products."""
+        if not self.inventory:
+            return None
 
-    print(f"El producto '{name}' no se encontró en el inventario.")
+        total_units = 0
+        total_value = 0.0
+        most_expensive_product = self.inventory[0]
+        highest_stock_product = self.inventory[0]
 
+        for i in self.inventory:
+            total_units += i["stock"]
+            total_value += i["price"] * i["stock"]
 
-def calculate_statistic() -> Optional[Statistics]:
-    """Compute summary metrics from inventory products."""
+            if i["price"] > most_expensive_product["price"]:
+                most_expensive_product = i
+            if i["stock"] > highest_stock_product["stock"]:
+                highest_stock_product = i
 
-    if not inventory:
-        return None
+        return {
+            "total_units": total_units,
+            "total_value": total_value,
+            "most_expensive_product": {
+                "name": most_expensive_product["name"],
+                "price": most_expensive_product["price"],
+            },
+            "highest_stock_product": {
+                "name": highest_stock_product["name"],
+                "stock": highest_stock_product["stock"],
+            },
+        }
 
-    total_units: int = 0
-    total_value: float = 0.0
+    def clear_inventory(self):
+        """Clear in-memory inventory list."""
+        self.inventory.clear()
 
-    most_expensive_product: Product = inventory[0]
-    highest_stock_product: Product = inventory[0]
-
-    for i in inventory:
-        total_units += i["stock"]
-        total_value += i["price"] * i["stock"]
-
-        if i["price"] > most_expensive_product["price"]:
-            most_expensive_product = i
-
-        if i["stock"] > highest_stock_product["stock"]:
-            highest_stock_product = i
-
-    return {
-        "total_units": total_units,
-        "total_value": total_value,
-        "most_expensive_product": {
-            "name": most_expensive_product["name"],
-            "price": most_expensive_product["price"],
-        },
-        "highest_stock_product": {
-            "name": highest_stock_product["name"],
-            "stock": highest_stock_product["stock"],
-        },
-    }
+    def read_product_memory_csv(self):
+        """Load products from CSV file into inventory (clears existing data first)."""
+        self.clear_inventory()
+        self.inventory.extend(read_products_csv())
 
 
-def clear_inventory():
-    inventory.clear()
-
-
-def read_product_memory_csv():
-    """Load products from CSV file into inventory (clears existing data first)."""
-    clear_inventory()
-    inventory.extend(read_products_csv())
+# Shared singleton instance for app/ui usage
+service = InventoryService()
