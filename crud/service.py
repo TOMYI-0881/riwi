@@ -98,7 +98,7 @@ def delete_product_inventory(name: str):
 def calculate_statistic() -> Optional[Statistics]:
     """Compute summary metrics from inventory products."""
 
-    if inventory is None:
+    if not inventory:
         return None
 
     total_units: int = 0
