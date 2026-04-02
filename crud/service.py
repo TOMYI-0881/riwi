@@ -49,7 +49,7 @@ class InventoryService:
     def find_product(self, name: str) -> Optional[Product]:
         """Find a product by name in inventory; returns product dict or None."""
         if not self._inventory:
-            print("No hay productos en el inventario.")
+            print("There are no products in stock.")
             return None
 
         for i in self._inventory:
