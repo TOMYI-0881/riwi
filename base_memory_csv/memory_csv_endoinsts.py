@@ -15,7 +15,7 @@ def read_products_csv() -> List[dict]:
     """Read products from CSV and return a list of product dictionaries."""
 
     if not os.path.isfile(FILE_PATH):
-        print("El archivo no existe.")
+        print("File does not exist.")
         return []
 
     products: List[dict] = []
@@ -34,17 +34,17 @@ def read_products_csv() -> List[dict]:
                         }
                     )
                 except (ValueError, TypeError) as e:
-                    print(f"Error de formato en fila CSV: {fila} -> {e}")
+                    print(f"CSV row format error: {fila} -> {e}")
                     continue
 
     except FileNotFoundError:
-        print(f"Archivo no encontrado: {FILE_PATH}")
+        print(f"File not found: {FILE_PATH}")
         return []
     except UnicodeDecodeError as e:
-        print(f"Error de decodificación al leer CSV: {e}")
+        print(f"CSV decode error: {e}")
         return []
     except Exception as e:
-        print(f"Error desconocido al leer CSV: {e}")
+        print(f"Unknown error reading CSV: {e}")
         return []
 
     return products
@@ -74,9 +74,9 @@ def add_product_csv(products: List[dict]):
     # Ask the user
     opcion = (
         input(
-            f"¿Sobrescribir inventario actual? ( YES / NO): \n"
-            f"Digita YES si quieres sobrescribir \n"
-            f"Digita NO si no quieres sobrescribir \n\n"
+            f"Overwrite current inventory? ( YES / NO): \n"
+            f"Type YES to overwrite \n"
+            f"Type NO to merge \n\n"
         )
         .strip()
         .lower()
@@ -98,7 +98,7 @@ def add_product_csv(products: List[dict]):
                         }
                     )
 
-            print("Inventario sobrescrito correctamente.")
+            print("Inventory overwritten successfully.")
             return
 
         # CASE 2: MERGE
@@ -128,17 +128,17 @@ def add_product_csv(products: List[dict]):
                         }
                     )
 
-            print("Inventario fusionado correctamente.")
+            print("Inventory merged successfully.")
             return
 
         else:
-            print("Opción no válida.")
+            print("Invalid option.")
 
     except FileNotFoundError as e:
-        print(f"Error: Archivo no encontrado al guardar CSV: {e}")
+        print(f"Error: File not found while saving CSV: {e}")
     except UnicodeDecodeError as e:
-        print(f"Error de decodificación al guardar CSV: {e}")
+        print(f"CSV decode error while saving: {e}")
     except ValueError as e:
-        print(f"Error de conversión de datos al guardar CSV: {e}")
+        print(f"Data conversion error while saving CSV: {e}")
     except Exception as e:
-        print(f"Error desconocido al guardar CSV: {e}")
+        print(f"Unknown error while saving CSV: {e}")

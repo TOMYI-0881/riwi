@@ -8,15 +8,15 @@ def show_menu():
     """Display static application menu options."""
     print(
         "-----------MENU----------- \n"
-        "1) Agregar producto \n"
-        "2) Mostrar Producto \n"
-        "3) Buscar Producto \n"
-        "4) Actualizar Producto \n"
-        "5) Eliminar Producto \n"
-        "6) Estadistica \n"
-        "7) Guardar CSV \n"
-        "8) Cargar CSV \n"
-        "9) Salir \n"
+        "1) Add product \n"
+        "2) Show products \n"
+        "3) Search product \n"
+        "4) Update product \n"
+        "5) Delete product \n"
+        "6) Statistics \n"
+        "7) Save CSV \n"
+        "8) Load CSV \n"
+        "9) Exit \n"
         "--------------------------\n"
     )
 
@@ -45,15 +45,13 @@ def update_product(product_wait: Product) -> Optional[dict]:
 
     while True:
         print("")
-        print("Producto seleccionado para actualizar:")
+        print("Selected product to update:")
         print("-" * 40)
-        print(f"Nombre: {product_wait['name']}")
-        print(f"Precio: ${product_wait['price']:.2f}")
+        print(f"Name: {product_wait['name']}")
+        print(f"Price: ${product_wait['price']:.2f}")
         print(f"Stock: {product_wait['stock']}")
         print("-" * 40)
-        process = (
-            input("Ingresa 'EDIT' para editar o 'SAVE' para guardar: ").strip().upper()
-        )
+        process = input("Enter 'EDIT' to edit or 'SAVE' to save: ").strip().upper()
 
         if process == "SAVE":
             return product_local
@@ -62,67 +60,65 @@ def update_product(product_wait: Product) -> Optional[dict]:
             edit = ""
             while True:
                 print("")
-                print("Opciones de edición:")
-                print("1. Editar precio")
-                print("2. Editar stock")
-                print("3. Salir de edición")
-                edit = input("Selecciona una opción (1-3): ").strip()
+                print("Edit options:")
+                print("1. Edit price")
+                print("2. Edit stock")
+                print("3. Exit editing")
+                edit = input("Select an option (1-3): ").strip()
 
                 try:
                     if edit == "1":
                         new_price = float(
-                            input(f"Nuevo precio para '{product_wait['name']}': ")
+                            input(f"New price for '{product_wait['name']}': ")
                         )
                         if new_price >= 0:
                             product_local["price"] = new_price
                             product_wait["price"] = new_price
-                            print("Precio actualizado.")
+                            print("Price updated.")
                         else:
-                            print("El precio debe ser mayor o igual a 0.")
+                            print("Price must be greater than or equal to 0.")
 
                     elif edit == "2":
                         new_stock = int(
-                            input(f"Nuevo stock para '{product_wait['name']}': ")
+                            input(f"New stock for '{product_wait['name']}': ")
                         )
                         if new_stock >= 0:
                             product_local["stock"] = new_stock
                             product_wait["stock"] = new_stock
-                            print("Stock actualizado.")
+                            print("Stock updated.")
                         else:
-                            print("El stock debe ser mayor o igual a 0.")
+                            print("Stock must be greater than or equal to 0.")
 
                     elif edit == "3":
                         break
 
                     else:
-                        print("Opción inválida.")
+                        print("Invalid option.")
 
                 except ValueError:
-                    print("Ingresa un valor válido.")
+                    print("Enter a valid value.")
 
 
 def logic_find_product(text: str):
     """Handle product search, update, or delete operations based on text action."""
-    name: str = (
-        input(f"Ingresa el nombre del producto que deseas {text}: ").strip().lower()
-    )
+    name: str = input(f"Enter the product name you want to {text}: ").strip().lower()
     i_name = inventory_service.find_product(name)
     if not i_name:
-        print(f"El producto '{name}' no se encuentra en el inventario.")
+        print(f"Product '{name}' not found in inventory.")
     else:
-        if text == "buscar":
-            print("Producto encontrado:")
+        if text == "search":
+            print("Product found:")
             print("-" * 40)
-            print(f"Nombre: {i_name['name']}")
-            print(f"Precio: ${i_name['price']:.2f}")
+            print(f"Name: {i_name['name']}")
+            print(f"Price: ${i_name['price']:.2f}")
             print(f"Stock: {i_name['stock']}")
             print("-" * 40)
 
-        if text == "actualizar":
+        if text == "update":
             product_up = update_product(i_name)
             inventory_service.update_product_inventory(product_up)
 
-        if text == "eliminar":
+        if text == "delete":
             inventory_service.delete_product_inventory(name)
 
 
@@ -133,22 +129,22 @@ def show_statistics():
     """
     statistics = inventory_service.calculate_statistic()
     if statistics is None:
-        print("El inventario está vacío.")
+        print("Inventory is empty.")
     else:
-        print("\nEstadísticas del inventario:")
+        print("\nInventory statistics:")
         print("-" * 40)
-        print(f"{'Unidades totales:':<25} {statistics['total_units']}")
-        print(f"{'Valor total:':<25} ${statistics['total_value']:.2f}")
+        print(f"{'Total units:':<25} {statistics['total_units']}")
+        print(f"{'Total value:':<25} ${statistics['total_value']:.2f}")
         print()
 
         most_expensive = statistics["most_expensive_product"]
-        print("Producto más caro:")
-        print(f"{'Nombre:':<25} {most_expensive.get('name', 'N/A')}")
-        print(f"{'Precio:':<25} ${most_expensive.get('price', 0):.2f}")
+        print("Most expensive product:")
+        print(f"{'Name:':<25} {most_expensive.get('name', 'N/A')}")
+        print(f"{'Price:':<25} ${most_expensive.get('price', 0):.2f}")
         print()
 
         highest_stock = statistics["highest_stock_product"]
-        print("Producto con mayor stock:")
-        print(f"{'Nombre:':<25} {highest_stock.get('name', 'N/A')}")
+        print("Highest stock product:")
+        print(f"{'Name:':<25} {highest_stock.get('name', 'N/A')}")
         print(f"{'Stock:':<25} {highest_stock.get('stock', 0)}")
         print("-" * 40)

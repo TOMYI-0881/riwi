@@ -27,14 +27,12 @@ class InventoryService:
     def show_products(self):
         """Print inventory products in a formatted table."""
         if not self._inventory:
-            print("No hay productos en el inventario.")
+            print("No products in inventory.")
             return
 
-        print("Productos en el inventario:")
+        print("Inventory products:")
         print("-" * 50)
-        print(
-            "{:<3} | {:<15} | {:<10} | {:<8}".format("No", "NOMBRE", "PRECIO", "STOCK")
-        )
+        print("{:<3} | {:<15} | {:<10} | {:<8}".format("No", "NAME", "PRICE", "STOCK"))
         print("-" * 50)
 
         for idx, product in enumerate(self._inventory, start=1):
@@ -73,28 +71,26 @@ class InventoryService:
                     change += 1
 
                 if change == 0:
-                    print("No se realizaron cambios en el producto.")
+                    print("No changes were made to the product.")
                 else:
-                    print("Producto actualizado correctamente.")
+                    print("Product updated successfully.")
                 return
 
-        print(
-            f"El producto '{up_product.get('name', '')}' no se encontró en el inventario."
-        )
+        print(f"Product '{up_product.get('name', '')}' not found in inventory.")
 
     def delete_product_inventory(self, name: str):
         """Delete a product by name from inventory."""
         if not self._inventory:
-            print("No hay productos en el inventario.")
+            print("No products in inventory.")
             return
 
         for item in self._inventory:
             if item["name"] == name:
                 self._inventory.remove(item)
-                print(f"Producto '{name}' eliminado exitosamente.")
+                print(f"Product '{name}' deleted successfully.")
                 return
 
-        print(f"El producto '{name}' no se encontró en el inventario.")
+        print(f"Product '{name}' not found in inventory.")
 
     def calculate_statistic(self) -> Optional[Statistics]:
         """Compute summary metrics from inventory products."""
@@ -136,7 +132,6 @@ class InventoryService:
         """Load products from CSV file into inventory (clears existing data first)."""
         self.clear_inventory()
         self._inventory.extend(read_products_csv())
-        print("Inventario cargado desde CSV correctamente.")
 
 
 # Shared singleton instance for app/ui usage

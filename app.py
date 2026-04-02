@@ -26,19 +26,17 @@ def menu_base():
             while True:
                 try:
                     if not name_product:
-                        name_product = input("Nombre del producto: ")
+                        name_product = input("Product name: ")
                         product_wait["name"] = name_product.strip().lower()
                     if price < 0.0:
-                        price = float(input(f"Precio del producto '{name_product}': "))
+                        price = float(input(f"Price of '{name_product}': "))
                         if price >= 0:
                             product_wait["price"] = price
                         else:
                             price = -0.1
                             continue
                     if stock < 0:
-                        stock = int(
-                            input(f"Cantidad de '{name_product}' que deseas agregar: ")
-                        )
+                        stock = int(input(f"Quantity of '{name_product}' to add: "))
                         if stock >= 0:
                             product_wait["stock"] = stock
                         else:
@@ -47,7 +45,7 @@ def menu_base():
 
                     break
                 except ValueError:
-                    print("Ingresa un valor válido.")
+                    print("Enter a valid value.")
 
             inventory_service.add_product_list(product_wait)
 
@@ -55,13 +53,13 @@ def menu_base():
             inventory_service.show_products()
 
         elif option == 3:
-            logic_find_product("buscar".lower())
+            logic_find_product("search")
 
         elif option == 4:
-            logic_find_product("actualizar".lower())
+            logic_find_product("update")
 
         elif option == 5:
-            logic_find_product("eliminar".lower())
+            logic_find_product("delete")
 
         elif option == 6:
             show_statistics()
@@ -72,27 +70,28 @@ def menu_base():
                 inventory_service.clear_inventory()
 
             else:
-                print("Error: El inventario está vacío.")
+                print("Error: Inventory is empty.")
 
         elif option == 8:
             try:
                 inventory_service.read_product_memory_csv()
+                print("Inventory successfully uploaded from CSV.")
             except FileNotFoundError:
-                print("No se encontró el archivo CSV de inventario pendiente.")
+                print("CSV inventory file not found.")
             except UnicodeDecodeError:
-                print("No se pudo decodificar el archivo CSV al cargar inventario.")
+                print("Could not decode CSV when loading inventory.")
             except ValueError as e:
-                print(f"Error de formato al cargar inventario CSV: {e}")
+                print(f"CSV format error when loading inventory: {e}")
             except Exception as e:
-                print(f"Error inesperado al cargar inventario CSV: {e}")
+                print(f"Unexpected error loading CSV inventory: {e}")
 
         elif option == 9:
-            print("Saliendo...")
+            print("Exiting...")
             break
         elif not option:
-            print("Ingresa un valor válido.")
+            print("Enter a valid value.")
         else:
-            print("Ingresa un número del 1 al 9.")
+            print("Enter a number from 1 to 9.")
 
 
 if __name__ == "__main__":
