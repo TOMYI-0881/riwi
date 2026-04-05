@@ -1,17 +1,35 @@
-"""Inventory service layer: product CRUD and statistics operations."""
+"""Capa de servicio de inventario: operaciones CRUD y cálculo de estadísticas.
+
+Este módulo contiene la clase InventoryService que gestiona todas las operaciones
+sobre los productos del inventario: agregar, leer, actualizar, eliminar y calcular
+estadísticas. Mantiene el estado del inventario en memoria y proporciona una
+interfaz para la persistencia en CSV.
+"""
 
 from estructure.model_data import *
 from base_memory_csv.memory_csv_endoinsts import read_products_csv
 
 
 class InventoryService:
-    """Stateful inventory service with in-memory list and CSV operations."""
+    """
+    Servicio de inventario con estado: mantiene una lista de productos en memoria
+    y proporciona operaciones CRUD, cálculo de estadísticas e integración con CSV.
+
+    La instancia es un singleton compartido entre la aplicación y la interfaz de usuario.
+    """
 
     def __init__(self):
         self._inventory: list[Product] = []
 
     def add_product_list(self, product: dict):
-        """Add product to inventory or update existing product stock and price."""
+        """Agrega un producto al inventario o actualiza uno existente.
+
+        Si el producto ya existe por nombre, incrementa el stock y actualiza el precio.
+        Si no existe, lo agrega como nuevo producto.
+
+        Args:
+            product (dict): Diccionario con las claves 'name', 'price' y 'stock'.
+        """
         for i in self._inventory:
             if i["name"] == product["name"]:
                 i["stock"] += product["stock"]
@@ -21,18 +39,30 @@ class InventoryService:
         self._inventory.append(product)
 
     def get_inventory(self):
-        """Return live inventory list reference."""
+        """
+        Retorna la referencia directa a la lista del inventario actual.
+
+        Returns:
+            list[Product]: La lista de productos en inventario.
+        """
         return self._inventory
 
     def show_products(self):
-        """Print inventory products in a formatted table."""
+        """
+        Muestra los productos del inventario en una tabla formateada.
+
+        Si el inventario está vacío, muestra un mensaje informativo.
+        La tabla incluye número de orden, nombre, precio y cantidad disponible.
+        """
         if not self._inventory:
-            print("No products in inventory.")
+            print("Sin productos en el inventario.")
             return
 
-        print("Inventory products:")
+        print("Productos en el inventario:")
         print("-" * 50)
-        print("{:<3} | {:<15} | {:<10} | {:<8}".format("No", "NAME", "PRICE", "STOCK"))
+        print(
+            "{:<3} | {:<15} | {:<10} | {:<8}".format("No", "NOMBRE", "PRECIO", "STOCK")
+        )
         print("-" * 50)
 
         for idx, product in enumerate(self._inventory, start=1):
@@ -47,9 +77,17 @@ class InventoryService:
         print("-" * 50)
 
     def find_product(self, name: str) -> Optional[Product]:
-        """Find a product by name in inventory; returns product dict or None."""
+        """
+        Busca un producto por nombre en el inventario.
+
+        Args:
+            name (str): El nombre del producto a buscar (en minúsculas).
+
+        Returns:
+            Optional[Product]: El diccionario del producto si se encuentra, None en caso contrario.
+        """
         if not self._inventory:
-            print("There are no products in stock.")
+            print("No hay productos en el inventario.")
             return None
 
         for i in self._inventory:
@@ -59,7 +97,15 @@ class InventoryService:
         return None
 
     def update_product_inventory(self, up_product: Product):
-        """Update inventory product fields by name with non-None values."""
+        """
+        Actualiza los campos de un producto en el inventario por nombre.
+
+        Solo actualiza los valores que no sean None en el producto proporcionado.
+        Muestra mensajes informativos sobre el resultado de la operación.
+
+        Args:
+            up_product (Product): Diccionario con el nombre del producto y los campos a actualizar.
+        """
         change = 0
         for i, v in enumerate(self._inventory):
             if v["name"] == up_product["name"]:
@@ -71,29 +117,50 @@ class InventoryService:
                     change += 1
 
                 if change == 0:
-                    print("No changes were made to the product.")
+                    print("No se realizaron cambios en el producto.")
                 else:
-                    print("Product updated successfully.")
+                    print("Producto actualizado exitosamente.")
                 return
 
-        print(f"Product '{up_product.get('name', '')}' not found in inventory.")
+        print(
+            f"El producto '{up_product.get('name', '')}' no se encontró en el inventario."
+        )
 
     def delete_product_inventory(self, name: str):
-        """Delete a product by name from inventory."""
+        """
+        Elimina un producto del inventario por nombre.
+
+        Muestra un mensaje de confirmación si el producto se eliminó correctamente,
+        o un mensaje de error si el producto no fue encontrado.
+
+        Args:
+            name (str): El nombre del producto a eliminar.
+        """
         if not self._inventory:
-            print("No products in inventory.")
+            print("Sin productos en el inventario.")
             return
 
         for item in self._inventory:
             if item["name"] == name:
                 self._inventory.remove(item)
-                print(f"Product '{name}' deleted successfully.")
+                print(f"Producto '{name}' eliminado exitosamente.")
                 return
 
-        print(f"Product '{name}' not found in inventory.")
+        print(f"El producto '{name}' no se encontró en el inventario.")
 
     def calculate_statistic(self) -> Optional[Statistics]:
-        """Compute summary metrics from inventory products."""
+        """
+        Calcula métricas resumidas del inventario.
+
+        Computa:
+        - Total de unidades en stock
+        - Valor total del inventario (precio * cantidad)
+        - Producto más costoso
+        - Producto con mayor cantidad en stock
+
+        Returns:
+            Optional[Statistics]: Diccionario con las estadísticas si hay productos, None si el inventario está vacío.
+        """
         if not self._inventory:
             return None
 
@@ -125,14 +192,21 @@ class InventoryService:
         }
 
     def clear_inventory(self):
-        """Clear in-memory inventory list."""
+        """
+        Limpia la lista del inventario en memoria eliminando todos los productos.
+        """
         self._inventory.clear()
 
     def read_product_memory_csv(self):
-        """Load products from CSV file into inventory (clears existing data first)."""
+        """
+        Carga los productos desde un archivo CSV al inventario.
+
+        Limpia el inventario actual antes de cargar los datos del archivo CSV,
+        asegurando que no haya duplicados o datos inconsistentes.
+        """
         self.clear_inventory()
         self._inventory.extend(read_products_csv())
 
 
-# Shared singleton instance for app/ui usage
+# Instancia singleton compartida para uso de la aplicación e interfaz de usuario
 service = InventoryService()

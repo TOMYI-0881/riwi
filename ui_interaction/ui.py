@@ -1,28 +1,46 @@
-"""Console UI helpers: menu display, user input, product find/update/statistics."""
+"""Módulo de interfaz de usuario de consola: menú, entrada de usuario, búsqueda y estadísticas.
+
+Este módulo contiene funciones auxiliares para mostrar el menú, solicitar opciones
+del usuario, buscar productos, actualizar productos y mostrar estadísticas del inventario.
+Toda la interacción con el usuario ocurre a través de la consola terminal.
+"""
 
 from estructure.model_data import *
 from crud.service import service as inventory_service
 
 
 def show_menu():
-    """Display static application menu options."""
+    """
+    Muestra el menú estático de opciones de la aplicación.
+
+    Las opciones incluyen añadir, mostrar, buscar, actualizar y eliminar productos,
+    ver estadísticas, guardar y cargar desde CSV, y salir de la aplicación.
+    """
     print(
-        "-----------MENU----------- \n"
-        "1) Add product \n"
-        "2) Show products \n"
-        "3) Search product \n"
-        "4) Update product \n"
-        "5) Delete product \n"
-        "6) Statistics \n"
-        "7) Save CSV \n"
-        "8) Load CSV \n"
-        "9) Exit \n"
+        "-----------MENÚ----------- \n"
+        "1) Añadir producto \n"
+        "2) Mostrar productos \n"
+        "3) Buscar producto \n"
+        "4) Actualizar producto \n"
+        "5) Eliminar producto \n"
+        "6) Estadísticas \n"
+        "7) Guardar en CSV \n"
+        "8) Cargar de CSV \n"
+        "9) Salir \n"
         "--------------------------\n"
     )
 
 
 def request_options() -> int | None:
-    """Read integer option from user input; return None on invalid input."""
+    """
+    Lee una opción numérica desde la entrada del usuario.
+
+    Intenta convertir la entrada a un entero. Si la entrada es inválida,
+    retorna None para indicar un error de conversión.
+
+    Returns:
+        int | None: La opción numérica si es válida, None en caso contrario.
+    """
     try:
         option = int(input())
         return option
@@ -31,10 +49,17 @@ def request_options() -> int | None:
 
 
 def update_product(product_wait: Product) -> Optional[dict]:
-    """Interactively update a product price and/or stock.
+    """
+    Interfaz interactiva para actualizar el precio y/o cantidad de un producto.
 
-    Returns a partial product dict with updated values. If no field is changed,
-    values remain None and the caller can skip the update.
+    Muestra un menú donde el usuario puede editar el precio o la cantidad del producto.
+    Retorna un diccionario parcial con solo los valores que fueron modificados (None si no hay cambios).
+
+    Args:
+        product_wait (Product): El producto a actualizar.
+
+    Returns:
+        Optional[dict]: Diccionario con el nombre y los campos actualizados del producto.
     """
 
     product_local: Product = {
@@ -45,106 +70,126 @@ def update_product(product_wait: Product) -> Optional[dict]:
 
     while True:
         print("")
-        print("Selected product to update:")
+        print("Producto seleccionado para actualizar:")
         print("-" * 40)
-        print(f"Name: {product_wait['name']}")
-        print(f"Price: ${product_wait['price']:.2f}")
+        print(f"Nombre: {product_wait['name']}")
+        print(f"Precio: ${product_wait['price']:.2f}")
         print(f"Stock: {product_wait['stock']}")
         print("-" * 40)
-        process = input("Enter 'EDIT' to edit or 'SAVE' to save: ").strip().upper()
+        process = (
+            input("Ingresa 'EDITAR' para editar o 'GUARDAR' para guardar: ")
+            .strip()
+            .upper()
+        )
 
-        if process == "SAVE":
+        if process == "GUARDAR":
             return product_local
 
-        elif process == "EDIT":
+        elif process == "EDITAR":
             edit = ""
             while True:
                 print("")
-                print("Edit options:")
-                print("1. Edit price")
-                print("2. Edit stock")
-                print("3. Exit editing")
-                edit = input("Select an option (1-3): ").strip()
+                print("Opciones de edición:")
+                print("1. Editar precio")
+                print("2. Editar stock")
+                print("3. Salir de edición")
+                edit = input("Selecciona una opción (1-3): ").strip()
 
                 try:
                     if edit == "1":
                         new_price = float(
-                            input(f"New price for '{product_wait['name']}': ")
+                            input(f"Nuevo precio para '{product_wait['name']}': ")
                         )
                         if new_price >= 0:
                             product_local["price"] = new_price
                             product_wait["price"] = new_price
-                            print("Price updated.")
+                            print("Precio actualizado.")
                         else:
-                            print("Price must be greater than or equal to 0.")
+                            print("El precio debe ser mayor o igual a 0.")
 
                     elif edit == "2":
                         new_stock = int(
-                            input(f"New stock for '{product_wait['name']}': ")
+                            input(f"Nuevo stock para '{product_wait['name']}': ")
                         )
                         if new_stock >= 0:
                             product_local["stock"] = new_stock
                             product_wait["stock"] = new_stock
-                            print("Stock updated.")
+                            print("Stock actualizado.")
                         else:
-                            print("Stock must be greater than or equal to 0.")
+                            print("El stock debe ser mayor o igual a 0.")
 
                     elif edit == "3":
                         break
 
                     else:
-                        print("Invalid option.")
+                        print("Opción inválida.")
 
                 except ValueError:
-                    print("Enter a valid value.")
+                    print("Por favor, ingresa un valor válido.")
 
 
 def logic_find_product(text: str):
-    """Handle product search, update, or delete operations based on text action."""
-    name: str = input(f"Enter the product name you want to {text}: ").strip().lower()
+    """
+    Maneja las operaciones de búsqueda, actualización o eliminación de productos.
+
+    Según el parámetro 'text', realiza:
+    - "buscar": Muestra la información del producto encontrado.
+    - "actualizar": Abre el editor interactivo para modificar el producto.
+    - "eliminar": Elimina el producto del inventario.
+
+    Args:
+        text (str): La acción a realizar: "buscar", "actualizar" o "eliminar".
+    """
+    name: str = (
+        input(f"Ingresa el nombre del producto que deseas {text}: ").strip().lower()
+    )
     i_name = inventory_service.find_product(name)
     if not i_name:
-        print(f"Product '{name}' not found in inventory.")
+        print(f"El producto '{name}' no se encontró en el inventario.")
     else:
-        if text == "search":
-            print("Product found:")
+        if text == "buscar":
+            print("Producto encontrado:")
             print("-" * 40)
-            print(f"Name: {i_name['name']}")
-            print(f"Price: ${i_name['price']:.2f}")
+            print(f"Nombre: {i_name['name']}")
+            print(f"Precio: ${i_name['price']:.2f}")
             print(f"Stock: {i_name['stock']}")
             print("-" * 40)
 
-        if text == "update":
+        if text == "actualizar":
             product_up = update_product(i_name)
             inventory_service.update_product_inventory(product_up)
 
-        if text == "delete":
+        if text == "eliminar":
             inventory_service.delete_product_inventory(name)
 
 
 def show_statistics():
-    """Display computed inventory statistics clearly.
+    """
+    Muestra las estadísticas agregadas del inventario de forma clara y formateada.
 
-    Uses calculate_statistic() to gather values and prints totals and best values.
+    Utiliza calculate_statistic() para obtener los valores y muestra:
+    - Total de unidades y valor total del inventario
+    - Producto más costoso
+    - Producto con mayor cantidad en stock
     """
     statistics = inventory_service.calculate_statistic()
     if statistics is None:
-        print("Inventory is empty.")
+        print("El inventario está vacío.")
     else:
-        print("\nInventory statistics:")
+        print("\nEstadísticas del inventario:")
         print("-" * 40)
-        print(f"{'Total units:':<25} {statistics['total_units']}")
-        print(f"{'Total value:':<25} ${statistics['total_value']:.2f}")
+        print(f"{'Total de unidades:':<25} {statistics['total_units']}")
+        print(f"{'Valor total:':<25} ${statistics['total_value']:.2f}")
         print()
 
         most_expensive = statistics["most_expensive_product"]
-        print("Most expensive product:")
-        print(f"{'Name:':<25} {most_expensive.get('name', 'N/A')}")
-        print(f"{'Price:':<25} ${most_expensive.get('price', 0):.2f}")
+        print("Producto más costoso:")
+        print(f"{'Nombre:':<25} {most_expensive.get('name', 'N/A')}")
+        print(f"{'Precio:':<25} ${most_expensive.get('price', 0):.2f}")
         print()
 
         highest_stock = statistics["highest_stock_product"]
-        print("Highest stock product:")
-        print(f"{'Name:':<25} {highest_stock.get('name', 'N/A')}")
+        print("Producto con mayor stock:")
+        print(f"{'Nombre:':<25} {highest_stock.get('name', 'N/A')}")
         print(f"{'Stock:':<25} {highest_stock.get('stock', 0)}")
         print("-" * 40)
